@@ -1,0 +1,6 @@
+[submodule "datahub"]
+	path = datahub
+	url = https://github.com/kohebth/koh-datahub.git
+[submodule "core"]
+	path = core
+	url = https://github.com/kohebth/koh-core.git
