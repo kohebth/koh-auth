@@ -1,0 +1,29 @@
+services:
+  auth:
+    env_file: develop.env
+    build:
+      dockerfile: docker/auth.Dockerfile
+      context: .
+    image: koh/auth-app
+    container_name: koh-auth
+    ports:
+      - 8080:8080
+      - 8081:8081
+    expose:
+      - 8080
+    networks:
+      - default
+    volumes:
+      - ./docker/jw.key:/root/.key/private.key
+      - ./docker/jw.key.pub:/root/.key/public.key
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+networks:
+  vps-network:
+    external: true
+  default:
+    name: vps-network
+    external: true

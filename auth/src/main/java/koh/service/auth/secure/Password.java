@@ -1,6 +1,4 @@
-package koh.service.auth.tools;
-
-import koh.core.base.AbstractPassword;
+package koh.service.auth.secure;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +16,7 @@ public class Password extends AbstractPassword {
 
     static byte[] sha256(byte[] bytes) {
         try {
-            MessageDigest m = MessageDigest.getInstance("SHA256");
+            MessageDigest m = MessageDigest.getInstance("SHA-256");
             return m.digest(bytes);
         } catch (NoSuchAlgorithmException e) {
             throw new PasswordToolsException(e);

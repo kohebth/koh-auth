@@ -1,5 +1,4 @@
-rootProject.name = "koh"
-include("core", "auth", "mail", "datahub", "remote")
-project(":core").projectDir = file("core")
+rootProject.name = "koh-auth"
+include("datahub", "auth")
 project(":auth").projectDir = file("auth")
 project(":datahub").projectDir = file("datahub")

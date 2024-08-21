@@ -1,26 +1,42 @@
 package koh.service.auth;
 
-import koh.core.server.SimpleServer;
-import koh.service.auth.service.*;
-import lombok.extern.slf4j.Slf4j;
+import koh.service.auth.handler.AuthenticateHandler;
+import koh.service.auth.handler.RefreshHandler;
+import koh.service.auth.handler.RegisterHandler;
+import koh.service.auth.kafka.KafkaConfig;
+import koh.service.auth.kafka.KafkaExecutor;
+import koh.service.auth.kafka.Topic;
+import koh.service.auth.secure.Jwt;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
-import static koh.core.base.HttpMethod.*;
+public class App {
+    final Jwt jwt;
+    final KafkaConfig kafkaConfig;
+    final KafkaConsumer<String, String> consumer;
+    final KafkaProducer<String, String> producer;
+    final KafkaExecutor kafkaExecutor;
 
-@Slf4j
-public class App extends SimpleServer {
-    public static void main(String[] args) {
-        new App().start();
+    App()
+            throws Exception {
+        this.jwt = new Jwt(AppConfig.APP_PRIVATE_KEY_PATH, AppConfig.APP_PUBLIC_KEY_PATH);
+        this.kafkaConfig = new KafkaConfig(AppConfig.KAFKA_HOST, AppConfig.KAFKA_PORT, AppConfig.KAFKA_GROUP);
+        this.consumer = new KafkaConsumer<>(this.kafkaConfig.getConsumerProperties());
+        this.producer = new KafkaProducer<>(this.kafkaConfig.getProducerProperties());
+        this.kafkaExecutor = new KafkaExecutor(this.consumer, this.producer);
     }
 
-    @Override
-    protected void config() {
-        host("0.0.0.0");
-        port(8080);
+    void start() {
+        this.kafkaExecutor.addHandler(Topic.REGISTER, new RegisterHandler(jwt));
+        this.kafkaExecutor.addHandler(Topic.AUTHENTICATION, new AuthenticateHandler(jwt));
+        this.kafkaExecutor.addHandler(Topic.REFRESH_TOKEN, new RefreshHandler(jwt));
 
-        route(DELETE, "/session", SessionEndService.class);
-        route(POST, "/session", SessionBeginService.class);
-        route(GET, "/session", SessionAuthenticateService.class);
-        route(PATCH, "/forget", ForgetService.class);
-        route(POST, "/register", RegisterService.class);
+        this.kafkaExecutor.exec();
+    }
+
+    public static void main(String[] args)
+            throws Exception {
+        new App().start();
     }
 }
