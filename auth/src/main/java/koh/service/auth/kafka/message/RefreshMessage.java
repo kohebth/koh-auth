@@ -1,4 +1,4 @@
-package koh.service.auth.message;
+package koh.service.auth.kafka.message;
 
 import lombok.Data;
 

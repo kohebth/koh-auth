@@ -16,7 +16,6 @@ public class JsonTools {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
-
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS, false);
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
@@ -35,7 +34,7 @@ public class JsonTools {
         OBJECT_MAPPER.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
         OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         OBJECT_MAPPER.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
-        OBJECT_MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NON_PRIVATE);
+        OBJECT_MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     public static <T> T fromJson(String json, Class<T> cls)

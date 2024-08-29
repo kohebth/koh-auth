@@ -2,35 +2,28 @@ package koh.service.auth.kafka;
 
 import koh.service.auth.handler.MessageHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
-public class KafkaExecutor {
+public class KafkaConsumerWorker {
     Map<String, MessageHandler> topicHandlers;
-    KafkaConsumer<String, String> consumer;
-    KafkaProducer<String, String> producer;
+    Consumer<String, String> consumer;
 
-    public KafkaExecutor(KafkaConsumer<String, String> consumer, KafkaProducer<String, String> producer) {
+    public KafkaConsumerWorker(Consumer<String, String> consumer) {
         this.topicHandlers = new HashMap<>();
         this.consumer = consumer;
-        this.producer = producer;
     }
 
-    public void addHandler(
-            Topic topic, MessageHandler handler
-    ) {
+    public void addHandler(KafkaReqTopic topic, MessageHandler handler) {
         topicHandlers.put(topic.name(), handler);
     }
 
@@ -43,7 +36,7 @@ public class KafkaExecutor {
                     log.info("Handling message topic: {}", m.topic());
                     log.info("Message key: {} \n value: {}", m.key(), m.value());
 
-                    this.consume(m).ifPresent(producer::send);
+                    this.consume(m);
 
                     log.info("Handled message topic: {}", m.topic());
                 }
@@ -59,12 +52,11 @@ public class KafkaExecutor {
         }
     }
 
-    Optional<ProducerRecord<String, String>> consume(ConsumerRecord<String, String> message) {
+    void consume(ConsumerRecord<String, String> message) {
         try {
-            return Optional.ofNullable(this.topicHandlers.getOrDefault(message.topic(), m -> null).handle(message));
+            this.topicHandlers.getOrDefault(message.topic(), m -> {}).handle(message);
         } catch (Exception e) {
             log.error("Unexpected error", e);
-            return Optional.empty();
         }
     }
 

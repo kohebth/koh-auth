@@ -1,4 +1,4 @@
-package koh.service.auth.message;
+package koh.service.auth.kafka.message;
 
 import lombok.Data;
 
@@ -6,5 +6,4 @@ import lombok.Data;
 public class AuthenticationMessage {
     String email;
     String password;
-    String sessionId;
 }
