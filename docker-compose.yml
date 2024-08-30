@@ -4,12 +4,12 @@ services:
     build:
       dockerfile: docker/auth.Dockerfile
       context: .
-    image: koh/auth-app
-    container_name: koh-auth
+    image: koh/auth
+    container_name: auth
     expose:
       - 8081
     networks:
-      - default
+      - kafka-network
     volumes:
       - ./docker/jw.key:/root/.key/private.key
       - ./docker/jw.key.pub:/root/.key/public.key
@@ -19,8 +19,5 @@ services:
           memory: 200M
 
 networks:
-  vps-network:
-    external: true
-  default:
-    name: vps-network
+  kafka-network:
     external: true
