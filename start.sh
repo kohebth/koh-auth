@@ -3,4 +3,5 @@
 cp develop.env .env
 ./gradlew wrapper
 ./gradlew build
-docker compose up --build
+docker compose up --build -d
+docker compose logs

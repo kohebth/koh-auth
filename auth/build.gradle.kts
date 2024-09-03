@@ -30,6 +30,8 @@ dependencies {
 
     implementation("org.apache.kafka:kafka-clients:3.6.0")
 
+    implementation("org.jooq:jooq:3.16.8")
+
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
 

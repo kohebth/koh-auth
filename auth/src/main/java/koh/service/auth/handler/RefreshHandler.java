@@ -29,6 +29,7 @@ public class RefreshHandler extends AbstractAuthHandler implements MessageHandle
 
         RefreshMessage m = JsonTools.fromJson(message.value(), RefreshMessage.class);
 
+        Long userId = m.getUserId();
         String email = m.getEmail();
         String refreshToken = m.getRefreshToken();
 
@@ -37,7 +38,7 @@ public class RefreshHandler extends AbstractAuthHandler implements MessageHandle
 
         if (c.getSubject().equals(email)) {
             AuthorizationMessage authorizationMessage = new AuthorizationMessage();
-            authorizationMessage.setAccessToken(jwt.generateAccess(email));
+            authorizationMessage.setAccessToken(jwt.generateAccess(email, userId));
 
             bus.respond(TOPIC_AUTH_REFRESH_RESPONSE, requestId, authorizationMessage);
         } else {

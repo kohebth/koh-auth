@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import koh.db.hub.vps_management.tables.records.UserRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +44,12 @@ public class Jwt {
         this.publicKey = loadPublicKey(publicKeyPath);
     }
 
-    public String generate(String user, Long timeout) {
+    public String generate(String user, Long userId, Long timeout) {
         try {
             return Jwts
                     .builder()
                     .setSubject(user)
+                    .setId(userId.toString())
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + timeout))
                     .signWith(SignatureAlgorithm.RS256, this.privateKey)
@@ -57,12 +59,12 @@ public class Jwt {
         }
     }
 
-    public String generateAccess(String user) {
-        return generate(user, JWT_ACCESS_TIMEOUT);
+    public String generateAccess(String user, Long userId) {
+        return generate(user, userId, JWT_ACCESS_TIMEOUT);
     }
 
-    public String generateRefresh(String user) {
-        return generate(user, JWT_REFRESH_TIMEOUT);
+    public String generateRefresh(String user, Long userId) {
+        return generate(user, userId, JWT_REFRESH_TIMEOUT);
     }
 
     public Claims verify(String token) {
